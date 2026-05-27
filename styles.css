@@ -1,0 +1,57 @@
+/* Section Carrousel format — activity card styles */
+
+/* Each activity card item: responsive fixed width, allows wrapping */
+.carrousel-cmlist .carrousel-card-item {
+    flex: 0 0 auto;
+    width: 200px;
+    list-style: none;
+}
+
+/* The card itself fills the li height */
+.carrousel-activity-card {
+    border-radius: 0.5rem;
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+    overflow: hidden;
+}
+
+.carrousel-activity-card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    transform: translateY(-2px);
+}
+
+/* Icon area at the top of each card */
+.carrousel-icon-top {
+    height: 100px;
+    background-color: #f0f4ff;
+}
+
+/* Icon image inside the card */
+.carrousel-icon {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+
+/* Colour the icon top by activity purpose (matches Moodle's purpose classes) */
+.carrousel-icon-top.assessment  { background-color: #fef3e2; }
+.carrousel-icon-top.collaboration { background-color: #e8f5e9; }
+.carrousel-icon-top.communication { background-color: #e3f2fd; }
+.carrousel-icon-top.content     { background-color: #f3e5f5; }
+.carrousel-icon-top.interface   { background-color: #e0f7fa; }
+.carrousel-icon-top.administration { background-color: #fce4ec; }
+
+/* Completion button area */
+.carrousel-completion .completion-dropdown,
+.carrousel-completion [data-region="completion-info"] {
+    display: flex;
+    justify-content: center;
+}
+
+/* Placeholder when an activity has no icon */
+.carrousel-icon-placeholder {
+    width: 48px;
+    height: 48px;
+    background-color: #dee2e6;
+    border-radius: 50%;
+    display: block;
+}
