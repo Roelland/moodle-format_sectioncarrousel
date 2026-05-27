@@ -64,4 +64,18 @@ class renderer extends section_renderer {
             course_get_format($course)->inplace_editable_render_section_name($section, false)
         );
     }
+
+    /**
+     * Render the full course content using our format-specific content template.
+     *
+     * section_renderer::render() strips the class name to "content" and calls this
+     * method, so we can bypass courseformat_named_templatable and use our own template.
+     *
+     * @param \core_courseformat\output\local\content $widget
+     * @return string HTML
+     */
+    public function render_content(\core_courseformat\output\local\content $widget): string {
+        $data = $widget->export_for_template($this);
+        return $this->render_from_template('format_sectioncarrousel/local/content', $data);
+    }
 }
