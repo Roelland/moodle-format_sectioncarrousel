@@ -56,11 +56,27 @@
     display: block;
 }
 
-/* Multi-item carousel (sections with 4+ activities) */
-.carrousel-multiitem .carousel-inner {
-    overflow: visible; /* allow card box-shadows and hover lift to show */
+/* Scroll-snap carousel (sections with 4+ activities) */
+.carrousel-nav-wrapper {
+    overflow-x: clip;   /* clip cards that scroll out of view */
+    overflow-y: visible; /* allow vertical card shadows and hover lift */
 }
 
-.carrousel-multiitem .carousel-item {
-    padding-bottom: 0.5rem; /* breathing room under last card row */
+.carrousel-scroll-container {
+    flex-wrap: nowrap !important;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;      /* Firefox */
+    -ms-overflow-style: none;   /* IE/Edge */
+    padding: 0.5rem 0;
+}
+
+.carrousel-scroll-container::-webkit-scrollbar {
+    display: none;              /* Chrome/Safari */
+}
+
+.carrousel-scroll-container .carrousel-card-item {
+    scroll-snap-align: start;
+    flex-shrink: 0;
 }

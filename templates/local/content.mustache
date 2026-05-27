@@ -72,10 +72,11 @@
 </div>
 {{$ core_courseformat/local/content-js}}
 {{#js}}
-require(['core_courseformat/local/content'], function(component) {
+require(['core_courseformat/local/content', 'format_sectioncarrousel/carrousel'], function(component, carrousel) {
     component.init(
         '#page', {}, {{sectionreturn}}, {{#pagesectionid}}{{.}}{{/pagesectionid}}{{^pagesectionid}}null{{/pagesectionid}}
     );
+    carrousel.init();
 });
 {{/js}}
 {{/ core_courseformat/local/content-js}}

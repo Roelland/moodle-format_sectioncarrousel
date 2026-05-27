@@ -17,9 +17,8 @@
 {{!
     @template core_courseformat/local/content/section/cmlist
 
-    Section Carrousel override: wraps activities in a flex-wrap card grid.
-    When a section has 4 or more activities the list switches to a Bootstrap 5
-    multi-item carousel (3 cards per slide).
+    Section Carrousel override: renders activity cards in a flex-wrap grid (fewer
+    than 4 activities) or a scroll-snap carousel with prev/next buttons (4 or more).
 
     Example context (json):
     {
@@ -39,50 +38,39 @@
         "cancelcopyurl": "#",
         "movetosectionurl": "#",
         "strmovefull": "",
-        "usecarousel": false,
-        "carouselid": "carrousel-cms-abc123",
-        "slides": [
-            {
-                "active": true,
-                "items": []
-            }
-        ]
+        "usecarousel": false
     }
 }}
 {{#showmovehere}}
 <p>{{movingstr}} (<a href="{{{cancelcopyurl}}}">{{#str}} cancel {{/str}}</a>)</p>
 {{/showmovehere}}
 {{#usecarousel}}
-<div id="{{carouselid}}" class="carousel slide carrousel-multiitem">
-    <div class="d-flex justify-content-end gap-2 mb-3 carrousel-nav">
-        <button class="btn btn-outline-secondary btn-sm px-3" type="button"
-                data-bs-target="#{{carouselid}}" data-bs-slide="prev"
-                aria-label="Previous slide">&#8249;</button>
-        <button class="btn btn-outline-secondary btn-sm px-3" type="button"
-                data-bs-target="#{{carouselid}}" data-bs-slide="next"
-                aria-label="Next slide">&#8250;</button>
+<div class="carrousel-nav-wrapper">
+    <div class="d-flex justify-content-end gap-2 mb-2">
+        <button class="btn btn-outline-secondary btn-sm px-3 carrousel-prev-btn"
+                type="button" aria-label="Previous">&#8249;</button>
+        <button class="btn btn-outline-secondary btn-sm px-3 carrousel-next-btn"
+                type="button" aria-label="Next">&#8250;</button>
     </div>
-    <div class="carousel-inner">
-        {{#slides}}
-        <div class="carousel-item {{#active}}active{{/active}}">
-            <ul class="section img-text d-flex flex-wrap gap-3 p-0 m-0 list-unstyled carrousel-cmlist"
-                data-for="cmlist">
-                {{#items}}
-                    {{#showmovehere}}
-                    <li class="movehere">
-                        <a href="{{{moveurl}}}" title="{{strmovefull}}" class="movehere"></a>
-                    </li>
-                    {{/showmovehere}}
-                    {{#cmitem}}
-                        {{$ format_sectioncarrousel/local/content/section/cmitem}}
-                            {{> format_sectioncarrousel/local/content/section/cmitem}}
-                        {{/ format_sectioncarrousel/local/content/section/cmitem}}
-                    {{/cmitem}}
-                {{/items}}
-            </ul>
-        </div>
-        {{/slides}}
-    </div>
+    <ul class="section img-text d-flex gap-3 p-0 py-2 m-0 list-unstyled carrousel-cmlist carrousel-scroll-container {{#hascms}}has-activities{{/hascms}}" data-for="cmlist">
+        {{#cms}}
+            {{#showmovehere}}
+            <li class="movehere">
+                <a href="{{{moveurl}}}" title="{{strmovefull}}" class="movehere"></a>
+            </li>
+            {{/showmovehere}}
+            {{#cmitem}}
+                {{$ format_sectioncarrousel/local/content/section/cmitem}}
+                    {{> format_sectioncarrousel/local/content/section/cmitem}}
+                {{/ format_sectioncarrousel/local/content/section/cmitem}}
+            {{/cmitem}}
+        {{/cms}}
+        {{#showmovehere}}
+        <li class="movehere">
+            <a href="{{{movetosectionurl}}}" title="{{strmovefull}}" class="movehere"></a>
+        </li>
+        {{/showmovehere}}
+    </ul>
 </div>
 {{/usecarousel}}
 {{^usecarousel}}

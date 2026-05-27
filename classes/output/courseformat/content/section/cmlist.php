@@ -49,26 +49,7 @@ class cmlist extends \core_courseformat\output\local\content\section\cmlist {
      */
     public function export_for_template(\renderer_base $output): \stdClass {
         $data = parent::export_for_template($output);
-
-        $cms = $data->cms ?? [];
-
-        if (count($cms) >= 4) {
-            $data->usecarousel = true;
-            $data->carouselid  = 'carrousel-cms-' . uniqid();
-
-            $slides = [];
-            foreach (array_chunk($cms, 3) as $i => $chunk) {
-                $slides[] = [
-                    'active' => ($i === 0),
-                    'items'  => array_values($chunk),
-                ];
-            }
-            $data->slides = $slides;
-        } else {
-            $data->usecarousel = false;
-            $data->slides      = [];
-        }
-
+        $data->usecarousel = !empty($data->cms) && count($data->cms) >= 4;
         return $data;
     }
 }
