@@ -56,27 +56,24 @@
     display: block;
 }
 
-/* Scroll-snap carousel (sections with 4+ activities) */
+/* Transform-based carousel (sections with 4+ activities)
+ *
+ * overflow-x: clip keeps cards within bounds. Crucially it does NOT coerce
+ * overflow-y to auto (unlike overflow-x: hidden), so overflow-y: visible is
+ * preserved and activity dropdown menus can extend downward freely.
+ */
 .carrousel-nav-wrapper {
-    overflow-x: clip;   /* clip cards that scroll out of view */
-    overflow-y: visible; /* allow vertical card shadows and hover lift */
+    overflow-x: clip;
+    overflow-y: visible;
 }
 
 .carrousel-scroll-container {
     flex-wrap: nowrap !important;
-    overflow-x: scroll;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
-    scrollbar-width: none;      /* Firefox */
-    -ms-overflow-style: none;   /* IE/Edge */
-    padding: 0.5rem 0;
-}
-
-.carrousel-scroll-container::-webkit-scrollbar {
-    display: none;              /* Chrome/Safari */
+    overflow: visible !important;   /* dropdowns must not be clipped */
+    transition: transform 0.3s ease;
+    will-change: transform;
 }
 
 .carrousel-scroll-container .carrousel-card-item {
-    scroll-snap-align: start;
     flex-shrink: 0;
 }

@@ -14,10 +14,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Scroll-snap carousel navigation for the Section Carrousel format.
+ * Transform-based carousel navigation for the Section Carrousel format.
  *
- * A single delegated click listener handles all .carrousel-nav-wrapper elements
- * on the page, including those injected later via AJAX section updates.
+ * Cards are moved via CSS transform so the <ul> can keep overflow:visible,
+ * letting Bootstrap dropdown menus extend beyond the carousel boundary without
+ * being clipped. The wrapper clips horizontal overflow via overflow-x:clip,
+ * which (unlike overflow-x:hidden) does not coerce overflow-y to auto.
  *
  * @module    format_sectioncarrousel/carrousel
  * @copyright 2026 Your Name
@@ -28,9 +30,36 @@ define([], function() {
 
     var initialized = false;
 
-    /**
-     * Attach a single delegated listener that handles all carousel prev/next buttons.
-     */
+    /** Per-wrapper scroll state (index = current first-visible card index). */
+    var state = new WeakMap();
+
+    function getStep(container) {
+        var card = container.querySelector('.carrousel-card-item');
+        if (!card) {
+            return 216;
+        }
+        var gap = parseFloat(window.getComputedStyle(container).gap) || 16;
+        return card.offsetWidth + gap;
+    }
+
+    function getVisibleCount(container) {
+        var card = container.querySelector('.carrousel-card-item');
+        if (!card) {
+            return 3;
+        }
+        var step = card.offsetWidth + (parseFloat(window.getComputedStyle(container).gap) || 16);
+        var wrapperWidth = container.closest('.carrousel-nav-wrapper').clientWidth;
+        return Math.max(1, Math.floor(wrapperWidth / step));
+    }
+
+    function getTotalCards(container) {
+        return container.querySelectorAll('.carrousel-card-item').length;
+    }
+
+    function applyTransform(container, index) {
+        container.style.transform = 'translateX(-' + (index * getStep(container)) + 'px)';
+    }
+
     function init() {
         if (initialized) {
             return;
@@ -50,11 +79,21 @@ define([], function() {
             if (!container) {
                 return;
             }
-            var card = container.querySelector('.carrousel-card-item');
-            var gap = parseFloat(window.getComputedStyle(container).gap) || 16;
-            var step = card ? (card.offsetWidth + gap) : 216;
-            var direction = btn.classList.contains('carrousel-prev-btn') ? -1 : 1;
-            container.scrollBy({left: direction * step, behavior: 'smooth'});
+
+            if (!state.has(wrapper)) {
+                state.set(wrapper, {index: 0});
+            }
+            var s = state.get(wrapper);
+
+            var max = Math.max(0, getTotalCards(container) - getVisibleCount(container));
+
+            if (btn.classList.contains('carrousel-prev-btn')) {
+                s.index = Math.max(0, s.index - 1);
+            } else {
+                s.index = Math.min(max, s.index + 1);
+            }
+
+            applyTransform(container, s.index);
         });
     }
 
