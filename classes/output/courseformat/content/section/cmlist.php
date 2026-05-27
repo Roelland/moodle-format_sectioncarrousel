@@ -37,4 +37,38 @@ class cmlist extends \core_courseformat\output\local\content\section\cmlist {
     public function get_template_name(\renderer_base $renderer): string {
         return 'format_sectioncarrousel/local/content/section/cmlist';
     }
+
+    /**
+     * Extend the parent data with carousel grouping.
+     *
+     * When a section has 4 or more activities the template switches to a
+     * Bootstrap 5 multi-item carousel; otherwise the plain flex-wrap grid is used.
+     *
+     * @param \renderer_base $output
+     * @return array
+     */
+    public function export_for_template(\renderer_base $output): array {
+        $data = parent::export_for_template($output);
+
+        $cms = $data['cms'] ?? [];
+
+        if (count($cms) >= 4) {
+            $data['usecarousel'] = true;
+            $data['carouselid']  = 'carrousel-cms-' . uniqid();
+
+            $slides = [];
+            foreach (array_chunk($cms, 3) as $i => $chunk) {
+                $slides[] = [
+                    'active' => ($i === 0),
+                    'items'  => array_values($chunk),
+                ];
+            }
+            $data['slides'] = $slides;
+        } else {
+            $data['usecarousel'] = false;
+            $data['slides']      = [];
+        }
+
+        return $data;
+    }
 }

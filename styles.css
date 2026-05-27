@@ -55,3 +55,12 @@
     border-radius: 50%;
     display: block;
 }
+
+/* Multi-item carousel (sections with 4+ activities) */
+.carrousel-multiitem .carousel-inner {
+    overflow: visible; /* allow card box-shadows and hover lift to show */
+}
+
+.carrousel-multiitem .carousel-item {
+    padding-bottom: 0.5rem; /* breathing room under last card row */
+}
