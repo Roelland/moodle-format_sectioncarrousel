@@ -17,8 +17,10 @@
 {{!
     @template core_courseformat/local/content/section/cmlist
 
-    Section Carrousel override: renders activity cards in a flex-wrap grid (fewer
-    than 4 activities) or a scroll-snap carousel with prev/next buttons (4 or more).
+    Section Carrousel override — three rendering modes:
+      editmode=true  → standard Moodle list (core cmitem, all edit controls intact)
+      editmode=false, usecarousel=true  → scroll-snap carousel with card cmitem
+      editmode=false, usecarousel=false → flex-wrap card grid with card cmitem
 
     Example context (json):
     {
@@ -38,12 +40,35 @@
         "cancelcopyurl": "#",
         "movetosectionurl": "#",
         "strmovefull": "",
+        "editmode": false,
         "usecarousel": false
     }
 }}
 {{#showmovehere}}
 <p>{{movingstr}} (<a href="{{{cancelcopyurl}}}">{{#str}} cancel {{/str}}</a>)</p>
 {{/showmovehere}}
+{{#editmode}}
+<ul class="section img-text" data-for="cmlist">
+    {{#cms}}
+        {{#showmovehere}}
+        <li class="movehere">
+            <a href="{{{moveurl}}}" title="{{strmovefull}}" class="movehere"></a>
+        </li>
+        {{/showmovehere}}
+        {{#cmitem}}
+            {{$ core_courseformat/local/content/section/cmitem}}
+                {{> core_courseformat/local/content/section/cmitem}}
+            {{/ core_courseformat/local/content/section/cmitem}}
+        {{/cmitem}}
+    {{/cms}}
+    {{#showmovehere}}
+    <li class="movehere">
+        <a href="{{{movetosectionurl}}}" title="{{strmovefull}}" class="movehere"></a>
+    </li>
+    {{/showmovehere}}
+</ul>
+{{/editmode}}
+{{^editmode}}
 {{#usecarousel}}
 <div class="carrousel-nav-wrapper">
     <div class="d-flex justify-content-end gap-2 mb-2">
@@ -94,3 +119,4 @@
 {{/showmovehere}}
 </ul>
 {{/usecarousel}}
+{{/editmode}}
