@@ -29,6 +29,19 @@ use stdClass;
 class cmitem extends \core_courseformat\output\local\content\section\cmitem {
 
     /**
+     * Point the renderer to our format-specific card template.
+     *
+     * The courseformat_named_templatable trait always returns core_courseformat/...
+     * so we override it to load format_sectioncarrousel/local/content/section/cmitem.
+     *
+     * @param \renderer_base $renderer
+     * @return string
+     */
+    public function get_template_name(\renderer_base $renderer): string {
+        return 'format_sectioncarrousel/local/content/section/cmitem';
+    }
+
+    /**
      * Export data for the mustache card template.
      *
      * Extends the core export with flat `cardicon`, `cardiconclass`, and `cardiconpurpose`
