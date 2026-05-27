@@ -48,8 +48,9 @@ class cmlist extends \core_courseformat\output\local\content\section\cmlist {
      * @return array
      */
     public function export_for_template(\renderer_base $output): \stdClass {
+        global $PAGE;
         $data = parent::export_for_template($output);
-        $data->usecarousel = !empty($data->cms) && count($data->cms) >= 4;
+        $data->usecarousel = !$PAGE->user_is_editing() && !empty($data->cms) && count($data->cms) >= 4;
         return $data;
     }
 }
