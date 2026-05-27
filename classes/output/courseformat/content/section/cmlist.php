@@ -47,14 +47,14 @@ class cmlist extends \core_courseformat\output\local\content\section\cmlist {
      * @param \renderer_base $output
      * @return array
      */
-    public function export_for_template(\renderer_base $output): array {
+    public function export_for_template(\renderer_base $output): \stdClass {
         $data = parent::export_for_template($output);
 
-        $cms = $data['cms'] ?? [];
+        $cms = $data->cms ?? [];
 
         if (count($cms) >= 4) {
-            $data['usecarousel'] = true;
-            $data['carouselid']  = 'carrousel-cms-' . uniqid();
+            $data->usecarousel = true;
+            $data->carouselid  = 'carrousel-cms-' . uniqid();
 
             $slides = [];
             foreach (array_chunk($cms, 3) as $i => $chunk) {
@@ -63,10 +63,10 @@ class cmlist extends \core_courseformat\output\local\content\section\cmlist {
                     'items'  => array_values($chunk),
                 ];
             }
-            $data['slides'] = $slides;
+            $data->slides = $slides;
         } else {
-            $data['usecarousel'] = false;
-            $data['slides']      = [];
+            $data->usecarousel = false;
+            $data->slides      = [];
         }
 
         return $data;
