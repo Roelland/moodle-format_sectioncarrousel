@@ -54,9 +54,27 @@ class cmitem extends \core_courseformat\output\local\content\section\cmitem {
         $data = parent::export_for_template($output);
 
         $iconurl = $this->mod->get_icon_url();
-        $data->cardicon       = $iconurl->out(false);
-        $data->cardiconclass  = $iconurl->get_param('filtericon') ? '' : 'nofilter';
+        $data->cardicon        = $iconurl->out(false);
+        $data->cardiconclass   = $iconurl->get_param('filtericon') ? '' : 'nofilter';
         $data->cardiconpurpose = plugin_supports('mod', $this->mod->modname, FEATURE_MOD_PURPOSE, MOD_PURPOSE_OTHER);
+
+        // Custom card image: use uploaded file if one exists for this activity.
+        $context = \context_module::instance($this->mod->id);
+        $fs      = get_file_storage();
+        $files   = $fs->get_area_files($context->id, 'format_sectioncarrousel', 'cardimage', 0, 'sortorder', false);
+        foreach ($files as $file) {
+            if ($file->get_filesize() > 0) {
+                $data->cardimage = \moodle_url::make_pluginfile_url(
+                    $file->get_contextid(),
+                    'format_sectioncarrousel',
+                    'cardimage',
+                    0,
+                    $file->get_filepath(),
+                    $file->get_filename()
+                )->out(false);
+                break;
+            }
+        }
 
         return $data;
     }

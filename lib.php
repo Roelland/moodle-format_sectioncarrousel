@@ -216,6 +216,81 @@ class format_sectioncarrousel extends core_courseformat\base {
 }
 
 /**
+ * Returns filemanager options for the activity card image field.
+ */
+function format_sectioncarrousel_cardimage_filemanageroptions(): array {
+    global $COURSE;
+    return [
+        'maxbytes'      => $COURSE->maxbytes,
+        'subdirs'       => 0,
+        'accepted_types' => 'image',
+        'maxfiles'      => 1,
+    ];
+}
+
+/**
+ * Adds the card image filemanager to the activity settings form.
+ */
+function format_sectioncarrousel_coursemodule_standard_elements($formwrapper, $form): void {
+    $form->addElement('header', 'sectioncarrouselhdr',
+        get_string('cardimagesection', 'format_sectioncarrousel'));
+
+    $form->addElement('filemanager', 'cardimage_filemanager',
+        get_string('cardimage', 'format_sectioncarrousel'), '',
+        format_sectioncarrousel_cardimage_filemanageroptions());
+
+    $context = $formwrapper->get_context();
+    $values  = new stdClass();
+    $values  = file_prepare_standard_filemanager(
+        $values,
+        'cardimage',
+        format_sectioncarrousel_cardimage_filemanageroptions(),
+        $context,
+        'format_sectioncarrousel',
+        'cardimage',
+        0
+    );
+    $form->setDefaults((array) $values);
+}
+
+/**
+ * Saves the uploaded card image after the activity settings form is submitted.
+ */
+function format_sectioncarrousel_coursemodule_edit_post_actions($data, $course) {
+    $context = context_module::instance($data->coursemodule);
+    file_postupdate_standard_filemanager(
+        $data,
+        'cardimage',
+        format_sectioncarrousel_cardimage_filemanageroptions(),
+        $context,
+        'format_sectioncarrousel',
+        'cardimage',
+        0
+    );
+    return $data;
+}
+
+/**
+ * Serves the uploaded card image files.
+ */
+function format_sectioncarrousel_pluginfile($course, $cm, context $context,
+        $filearea, $args, $forcedownload, array $options = []): bool {
+    if ($filearea !== 'cardimage') {
+        return false;
+    }
+    $itemid       = array_shift($args);
+    $relativepath = implode('/', $args);
+    $fullpath     = "/{$context->id}/format_sectioncarrousel/{$filearea}/{$itemid}/{$relativepath}";
+    $fs           = get_file_storage();
+    $file         = $fs->get_file_by_hash(sha1($fullpath));
+    if (!$file || $file->is_directory()) {
+        return false;
+    }
+    send_stored_file($file, 0, 0, $forcedownload, $options);
+    return true;
+}
+
+/**
  * Implements in-place section name editing.
  */
 function format_sectioncarrousel_inplace_editable(string $itemtype, int $itemid, $newvalue): inplace_editable {

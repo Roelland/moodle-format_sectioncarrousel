@@ -56,7 +56,13 @@
 >
     <div class="card h-100 shadow-sm carrousel-activity-card position-relative">
 
-        {{! ── Card image-top: activity icon ── }}
+        {{! ── Card image-top: custom uploaded image, or activity icon as fallback ── }}
+        {{#cardimage}}
+        <div class="card-img-top carrousel-icon-top"
+             style="background-image: url('{{{cardimage}}}'); background-size: cover; background-position: center;">
+        </div>
+        {{/cardimage}}
+        {{^cardimage}}
         <div class="card-img-top carrousel-icon-top d-flex align-items-center justify-content-center {{cardiconpurpose}}">
             {{#cardicon}}
                 <img
@@ -70,6 +76,7 @@
                 <span class="carrousel-icon-placeholder"></span>
             {{/cardicon}}
         </div>
+        {{/cardimage}}
 
         {{#cmformat}}
 
