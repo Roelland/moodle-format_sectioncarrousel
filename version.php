@@ -24,8 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2026052900;        // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2025120000;        // Requires Moodle 5.1 (Build: 20251200).
+$plugin->version   = 2026053000;        // The current plugin version (Date: YYYYMMDDXX).
+$plugin->requires  = 2025092200;        // Requires Moodle 5.1 (Build: 20250922).
 $plugin->component = 'format_sectioncarrousel';
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '1.0';
+$plugin->release   = '1.1';
