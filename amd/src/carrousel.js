@@ -72,7 +72,7 @@ define(['core/modal'], function(Modal) {
             ? '<a href="' + courseUrl + '" class="btn btn-primary">' + gotoText + '</a>'
             : '';
         Modal.create({
-            title: titleEl.innerHTML,
+            title: titleEl.textContent,
             body: bodyEl.innerHTML,
             footer: footer,
             isVerticallyCentered: true,

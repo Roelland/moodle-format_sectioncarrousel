@@ -15,17 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details.
+ * Event observers for the Section Carrousel course format.
  *
- * @package    format_sectioncarrousel
- * @copyright  2026 Your Name
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   format_sectioncarrousel
+ * @copyright 2026 Your Name
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2026052900;        // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2025120000;        // Requires Moodle 5.1 (Build: 20251200).
-$plugin->component = 'format_sectioncarrousel';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '1.0';
+$observers = [
+    [
+        'eventname' => '\core\event\course_module_deleted',
+        'callback'  => '\format_sectioncarrousel\observer::course_module_deleted',
+    ],
+];

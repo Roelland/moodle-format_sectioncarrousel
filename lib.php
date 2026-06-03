@@ -141,10 +141,14 @@ class format_sectioncarrousel extends core_courseformat\base {
      * hiddensections — controls visibility of hidden slides.
      */
     public function course_format_options($foreditform = false): array {
-        static $courseformatoptions = false;
-        if ($courseformatoptions === false) {
+        // Keyed by course ID so that loading multiple courses in a single
+        // PHP request (e.g. course listing) does not mix up their settings.
+        static $courseformatoptions = [];
+        $courseid = $this->courseid;
+
+        if (!isset($courseformatoptions[$courseid])) {
             $courseconfig = get_config('moodlecourse');
-            $courseformatoptions = [
+            $courseformatoptions[$courseid] = [
                 'hiddensections' => [
                     'default' => $courseconfig->hiddensections,
                     'type'    => PARAM_INT,
@@ -160,7 +164,7 @@ class format_sectioncarrousel extends core_courseformat\base {
             ];
         }
 
-        if ($foreditform && !isset($courseformatoptions['hiddensections']['label'])) {
+        if ($foreditform && !isset($courseformatoptions[$courseid]['hiddensections']['label'])) {
             $hiddensectionslist = new core\output\choicelist();
             $hiddensectionslist->set_allow_empty(false);
             $hiddensectionslist->add_option(1, new lang_string('hiddensectionsinvisible'),
@@ -168,7 +172,7 @@ class format_sectioncarrousel extends core_courseformat\base {
             $hiddensectionslist->add_option(0, new lang_string('hiddensectionscollapsed'),
                 ['description' => new lang_string('hiddensectionscollapsed_description')]);
 
-            $courseformatoptions = array_merge_recursive($courseformatoptions, [
+            $courseformatoptions[$courseid] = array_merge_recursive($courseformatoptions[$courseid], [
                 'hiddensections' => [
                     'label'            => new lang_string('hiddensections'),
                     'element_type'     => 'choicedropdown',
@@ -185,7 +189,7 @@ class format_sectioncarrousel extends core_courseformat\base {
             ]);
         }
 
-        return $courseformatoptions;
+        return $courseformatoptions[$courseid];
     }
 
     public function update_course_format_options($data, $oldcourse = null): bool {
@@ -248,6 +252,11 @@ function format_sectioncarrousel_cardimage_filemanageroptions(): array {
  * Adds the card image filemanager (and subcourse image checkbox) to the activity settings form.
  */
 function format_sectioncarrousel_coursemodule_standard_elements($formwrapper, $form): void {
+    // Only add fields when the course actually uses this format.
+    if (course_get_format($formwrapper->get_course())->get_format() !== 'sectioncarrousel') {
+        return;
+    }
+
     $form->addElement('header', 'sectioncarrouselhdr',
         get_string('cardimagesection', 'format_sectioncarrousel'));
 
@@ -286,6 +295,10 @@ function format_sectioncarrousel_coursemodule_standard_elements($formwrapper, $f
  * Saves the uploaded card image and subcourse-image checkbox after the activity settings form is submitted.
  */
 function format_sectioncarrousel_coursemodule_edit_post_actions($data, $course) {
+    if (course_get_format($course)->get_format() !== 'sectioncarrousel') {
+        return $data;
+    }
+
     $context = context_module::instance($data->coursemodule);
     file_postupdate_standard_filemanager(
         $data,
@@ -308,6 +321,16 @@ function format_sectioncarrousel_coursemodule_edit_post_actions($data, $course) 
 }
 
 /**
+ * Declares the file areas managed by this plugin (used by backup/restore and admin tools).
+ */
+function format_sectioncarrousel_get_file_areas($course, $cm, $context): array {
+    if ($context->contextlevel == CONTEXT_MODULE) {
+        return ['cardimage' => get_string('cardimage', 'format_sectioncarrousel')];
+    }
+    return [];
+}
+
+/**
  * Serves the uploaded card image files.
  */
 function format_sectioncarrousel_pluginfile($course, $cm, context $context,
@@ -315,6 +338,10 @@ function format_sectioncarrousel_pluginfile($course, $cm, context $context,
     if ($filearea !== 'cardimage') {
         return false;
     }
+
+    // Require the user to be logged in and enrolled in the course.
+    require_login($course, true, $cm);
+
     $itemid       = array_shift($args);
     $relativepath = implode('/', $args);
     $fullpath     = "/{$context->id}/format_sectioncarrousel/{$filearea}/{$itemid}/{$relativepath}";
