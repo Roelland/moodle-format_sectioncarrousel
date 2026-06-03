@@ -94,7 +94,22 @@
             {{/hasname}}
         </div>
 
-        {{! ── Card footer: completion (Mark as done) button ── }}
+        {{! ── Card footer: info button (subcourse) + completion button ── }}
+        {{#subcoursemodal}}
+        <div class="card-footer bg-transparent border-top p-2 carrousel-completion d-flex align-items-center justify-content-center gap-2 position-relative" style="z-index: 2;">
+            <button type="button"
+                    class="btn btn-secondary btn-sm carrousel-subcourse-info-btn"
+                    data-modal="{{subcoursemodaliid}}">
+                {{#str}} subcourseinfo, format_sectioncarrousel {{/str}}
+            </button>
+            {{#completion}}
+            {{$ core_courseformat/local/content/cm/completion }}
+                {{> core_courseformat/local/content/cm/completion }}
+            {{/ core_courseformat/local/content/cm/completion }}
+            {{/completion}}
+        </div>
+        {{/subcoursemodal}}
+        {{^subcoursemodal}}
         {{#completion}}
         <div class="card-footer bg-transparent border-top text-center p-2 carrousel-completion position-relative" style="z-index: 2;">
             {{$ core_courseformat/local/content/cm/completion }}
@@ -102,6 +117,7 @@
             {{/ core_courseformat/local/content/cm/completion }}
         </div>
         {{/completion}}
+        {{/subcoursemodal}}
 
         {{! ── Edit mode: control menu pinned to top-right corner ── }}
         {{#editing}}
@@ -116,4 +132,13 @@
 
         {{/cmformat}}
     </div>
+    {{! ── Hidden description store for the modal (outside .card to avoid overflow:hidden) ── }}
+    {{#subcoursemodal}}
+    <div id="{{subcoursemodaliid}}" class="d-none"
+         data-courseurl="{{subcourseurl}}"
+         data-gototext="{{#str}} subcoursegoTo, format_sectioncarrousel {{/str}}">
+        <span class="carrousel-modal-title">{{subcoursecoursename}}</span>
+        <div class="carrousel-modal-body">{{{subcoursedescription}}}</div>
+    </div>
+    {{/subcoursemodal}}
 </li>

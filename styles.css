@@ -3,7 +3,7 @@
 /* Each activity card item: responsive fixed width, allows wrapping */
 .carrousel-cmlist .carrousel-card-item {
     flex: 0 0 auto;
-    width: 200px;
+    width: 250px;
     list-style: none;
 }
 
@@ -21,7 +21,7 @@
 
 /* Icon area at the top of each card */
 .carrousel-icon-top {
-    height: 100px;
+    height: 150px;
     background-color: #f0f4ff;
 }
 

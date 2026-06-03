@@ -38,6 +38,10 @@ class cmitem extends \core_courseformat\output\local\content\section\cmitem {
      * @return string
      */
     public function get_template_name(\renderer_base $renderer): string {
+        global $PAGE;
+        if ($PAGE->user_is_editing()) {
+            return 'core_courseformat/local/content/section/cmitem';
+        }
         return 'format_sectioncarrousel/local/content/section/cmitem';
     }
 
@@ -73,6 +77,59 @@ class cmitem extends \core_courseformat\output\local\content\section\cmitem {
                     $file->get_filename()
                 )->out(false);
                 break;
+            }
+        }
+
+        // Subcourse: resolve the referenced course once for both image and description modal.
+        $data->subcoursemodal = false;
+        if ($this->mod->modname === 'subcourse') {
+            global $DB;
+            $subcourse = $DB->get_record('subcourse', ['id' => $this->mod->instance], 'id,refcourse');
+            if ($subcourse && !empty($subcourse->refcourse)) {
+                $coursecontext = \context_course::instance($subcourse->refcourse, IGNORE_MISSING);
+
+                // Course image (only when no custom image is uploaded and the toggle is on).
+                $cmval = get_config('format_sectioncarrousel', 'cm' . $this->mod->id . '_subcourseimage');
+                $usesubcourseimage = ($cmval === false)
+                    ? (bool) get_config('format_sectioncarrousel', 'showsubcourseimage')
+                    : (bool) $cmval;
+
+                if (empty($data->cardimage) && $usesubcourseimage && $coursecontext) {
+                    $overviewfiles = $fs->get_area_files(
+                        $coursecontext->id, 'course', 'overviewfiles', 0, 'sortorder', false);
+                    foreach ($overviewfiles as $file) {
+                        if ($file->get_filesize() > 0) {
+                            // itemid must be null: course/overviewfiles pluginfile handler
+                            // does not include itemid in the URL path.
+                            $data->cardimage = \moodle_url::make_pluginfile_url(
+                                $file->get_contextid(),
+                                'course',
+                                'overviewfiles',
+                                null,
+                                $file->get_filepath(),
+                                $file->get_filename()
+                            )->out(false);
+                            break;
+                        }
+                    }
+                }
+
+                // Description modal: show info button when the referenced course has a description.
+                $refcourse = $DB->get_record('course', ['id' => $subcourse->refcourse],
+                    'id,fullname,summary,summaryformat');
+                if ($refcourse && trim($refcourse->summary) !== '') {
+                    $modalcontext = $coursecontext ?: \context_system::instance();
+                    $data->subcoursemodal      = true;
+                    $data->subcoursemodaliid   = 'carrousel-modal-' . $this->mod->id;
+                    $data->subcoursecoursename = format_string($refcourse->fullname);
+                    $data->subcoursedescription = format_text(
+                        $refcourse->summary,
+                        $refcourse->summaryformat,
+                        ['context' => $modalcontext]
+                    );
+                    $data->subcourseurl = (new \moodle_url('/course/view.php',
+                        ['id' => $subcourse->refcourse]))->out(false);
+                }
             }
         }
 

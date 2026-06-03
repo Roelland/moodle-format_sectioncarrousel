@@ -51,7 +51,20 @@ class cmlist extends \core_courseformat\output\local\content\section\cmlist {
         global $PAGE;
         $data = parent::export_for_template($output);
         $isediting = $PAGE->user_is_editing();
-        $data->editmode   = $isediting;
+
+        $options    = $this->format->get_format_options();
+        $sectionnum = $this->section->section;
+
+        $isregular = (!empty($options['firstsectionregular']) && $sectionnum == 0)
+                  || (!empty($options['lastsectionregular'])  && $sectionnum == $this->format->get_last_section_number());
+
+        if ($isregular) {
+            $data->editmode    = true;
+            $data->usecarousel = false;
+            return $data;
+        }
+
+        $data->editmode    = $isediting;
         $data->usecarousel = !$isediting && !empty($data->cms) && count($data->cms) >= 4;
         return $data;
     }

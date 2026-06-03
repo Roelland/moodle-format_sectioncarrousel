@@ -149,6 +149,14 @@ class format_sectioncarrousel extends core_courseformat\base {
                     'default' => $courseconfig->hiddensections,
                     'type'    => PARAM_INT,
                 ],
+                'firstsectionregular' => [
+                    'default' => 1,
+                    'type'    => PARAM_INT,
+                ],
+                'lastsectionregular' => [
+                    'default' => 0,
+                    'type'    => PARAM_INT,
+                ],
             ];
         }
 
@@ -165,6 +173,14 @@ class format_sectioncarrousel extends core_courseformat\base {
                     'label'            => new lang_string('hiddensections'),
                     'element_type'     => 'choicedropdown',
                     'element_attributes' => [$hiddensectionslist],
+                ],
+                'firstsectionregular' => [
+                    'label'        => new lang_string('firstsectionregular', 'format_sectioncarrousel'),
+                    'element_type' => 'advcheckbox',
+                ],
+                'lastsectionregular' => [
+                    'label'        => new lang_string('lastsectionregular', 'format_sectioncarrousel'),
+                    'element_type' => 'advcheckbox',
                 ],
             ]);
         }
@@ -229,7 +245,7 @@ function format_sectioncarrousel_cardimage_filemanageroptions(): array {
 }
 
 /**
- * Adds the card image filemanager to the activity settings form.
+ * Adds the card image filemanager (and subcourse image checkbox) to the activity settings form.
  */
 function format_sectioncarrousel_coursemodule_standard_elements($formwrapper, $form): void {
     $form->addElement('header', 'sectioncarrouselhdr',
@@ -238,6 +254,19 @@ function format_sectioncarrousel_coursemodule_standard_elements($formwrapper, $f
     $form->addElement('filemanager', 'cardimage_filemanager',
         get_string('cardimage', 'format_sectioncarrousel'), '',
         format_sectioncarrousel_cardimage_filemanageroptions());
+
+    // Show the subcourse-image checkbox only when editing a subcourse activity.
+    $cm = $formwrapper->get_coursemodule();
+    $issubcourse = $cm && isset($cm->modname) && $cm->modname === 'subcourse';
+    if ($issubcourse) {
+        $cmid        = $cm->id;
+        $savedvalue  = get_config('format_sectioncarrousel', 'cm' . $cmid . '_subcourseimage');
+        $defaultval  = ($savedvalue === false) ? 1 : (int) $savedvalue;
+
+        $form->addElement('advcheckbox', 'sectioncarrousel_subcourseimage',
+            get_string('subcourseimage', 'format_sectioncarrousel'), '', [], [0, 1]);
+        $form->setDefault('sectioncarrousel_subcourseimage', $defaultval);
+    }
 
     $context = $formwrapper->get_context();
     $values  = new stdClass();
@@ -254,7 +283,7 @@ function format_sectioncarrousel_coursemodule_standard_elements($formwrapper, $f
 }
 
 /**
- * Saves the uploaded card image after the activity settings form is submitted.
+ * Saves the uploaded card image and subcourse-image checkbox after the activity settings form is submitted.
  */
 function format_sectioncarrousel_coursemodule_edit_post_actions($data, $course) {
     $context = context_module::instance($data->coursemodule);
@@ -267,6 +296,14 @@ function format_sectioncarrousel_coursemodule_edit_post_actions($data, $course) 
         'cardimage',
         0
     );
+
+    // Persist the per-activity subcourse image toggle (only present for subcourse modules).
+    if (isset($data->sectioncarrousel_subcourseimage)) {
+        set_config('cm' . $data->coursemodule . '_subcourseimage',
+            (int) $data->sectioncarrousel_subcourseimage,
+            'format_sectioncarrousel');
+    }
+
     return $data;
 }
 

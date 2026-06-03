@@ -25,7 +25,7 @@
  * @copyright 2026 Your Name
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-define([], function() {
+define(['core/modal'], function(Modal) {
     'use strict';
 
     var initialized = false;
@@ -60,6 +60,30 @@ define([], function() {
         container.style.transform = 'translateX(-' + (index * getStep(container)) + 'px)';
     }
 
+    function showSubcourseModal(contentEl) {
+        var titleEl   = contentEl.querySelector('.carrousel-modal-title');
+        var bodyEl    = contentEl.querySelector('.carrousel-modal-body');
+        var courseUrl = contentEl.getAttribute('data-courseurl');
+        var gotoText  = contentEl.getAttribute('data-gototext');
+        if (!titleEl || !bodyEl) {
+            return;
+        }
+        var footer = courseUrl
+            ? '<a href="' + courseUrl + '" class="btn btn-primary">' + gotoText + '</a>'
+            : '';
+        Modal.create({
+            title: titleEl.innerHTML,
+            body: bodyEl.innerHTML,
+            footer: footer,
+            isVerticallyCentered: true,
+            scrollable: true,
+            removeOnClose: true,
+        }).then(function(modal) {
+            modal.show();
+            return modal;
+        });
+    }
+
     function init() {
         if (initialized) {
             return;
@@ -67,33 +91,44 @@ define([], function() {
         initialized = true;
 
         document.addEventListener('click', function(e) {
+            // Carousel prev/next navigation.
             var btn = e.target.closest('.carrousel-prev-btn, .carrousel-next-btn');
-            if (!btn) {
+            if (btn) {
+                var wrapper = btn.closest('.carrousel-nav-wrapper');
+                if (!wrapper) {
+                    return;
+                }
+                var container = wrapper.querySelector('.carrousel-scroll-container');
+                if (!container) {
+                    return;
+                }
+
+                if (!state.has(wrapper)) {
+                    state.set(wrapper, {index: 0});
+                }
+                var s = state.get(wrapper);
+
+                var max = Math.max(0, getTotalCards(container) - getVisibleCount(container));
+
+                if (btn.classList.contains('carrousel-prev-btn')) {
+                    s.index = Math.max(0, s.index - 1);
+                } else {
+                    s.index = Math.min(max, s.index + 1);
+                }
+
+                applyTransform(container, s.index);
                 return;
             }
-            var wrapper = btn.closest('.carrousel-nav-wrapper');
-            if (!wrapper) {
-                return;
-            }
-            var container = wrapper.querySelector('.carrousel-scroll-container');
-            if (!container) {
-                return;
-            }
 
-            if (!state.has(wrapper)) {
-                state.set(wrapper, {index: 0});
+            // Subcourse info modal.
+            var infoBtn = e.target.closest('.carrousel-subcourse-info-btn');
+            if (infoBtn) {
+                var modalId = infoBtn.getAttribute('data-modal');
+                var contentEl = modalId ? document.getElementById(modalId) : null;
+                if (contentEl) {
+                    showSubcourseModal(contentEl);
+                }
             }
-            var s = state.get(wrapper);
-
-            var max = Math.max(0, getTotalCards(container) - getVisibleCount(container));
-
-            if (btn.classList.contains('carrousel-prev-btn')) {
-                s.index = Math.max(0, s.index - 1);
-            } else {
-                s.index = Math.min(max, s.index + 1);
-            }
-
-            applyTransform(container, s.index);
         });
     }
 

@@ -15,17 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details.
+ * Admin settings for the Section Carrousel course format.
  *
- * @package    format_sectioncarrousel
- * @copyright  2026 Your Name
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   format_sectioncarrousel
+ * @copyright 2026 Your Name
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2026052801;        // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2026042000;        // Requires Moodle 5.2 (Build: 20260420).
-$plugin->component = 'format_sectioncarrousel';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '1.0';
+if ($ADMIN->fulltree) {
+    $settings->add(new admin_setting_configcheckbox(
+        'format_sectioncarrousel/showsubcourseimage',
+        get_string('showsubcourseimage', 'format_sectioncarrousel'),
+        get_string('showsubcourseimage_desc', 'format_sectioncarrousel'),
+        1  // default: enabled
+    ));
+}
