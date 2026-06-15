@@ -129,6 +129,27 @@ define(['core/modal'], function(Modal) {
                     showSubcourseModal(contentEl);
                 }
             }
+
+            // Restriction info modal.
+            var restrictionBtn = e.target.closest('.carrousel-restriction-overlay');
+            if (restrictionBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                var restrictionTitle = restrictionBtn.getAttribute('data-restriction-title');
+                var restrictionBody  = restrictionBtn.getAttribute('data-restriction-body');
+                if (restrictionBody) {
+                    Modal.create({
+                        title: restrictionTitle || '',
+                        body: restrictionBody,
+                        isVerticallyCentered: true,
+                        scrollable: true,
+                        removeOnClose: true,
+                    }).then(function(modal) {
+                        modal.show();
+                        return modal;
+                    });
+                }
+            }
         });
     }
 

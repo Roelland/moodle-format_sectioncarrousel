@@ -80,6 +80,14 @@ class cmitem extends \core_courseformat\output\local\content\section\cmitem {
             }
         }
 
+        // Restriction badge: show ⓘ on cards the student can see but not access.
+        $data->restrictionbadge = false;
+        if (!$this->mod->uservisible && !empty($this->mod->availableinfo)) {
+            $data->restrictionbadge   = true;
+            $data->restrictionmodalid = 'carrousel-restriction-' . $this->mod->id;
+            $data->restrictioninfo    = $this->mod->availableinfo;
+        }
+
         // Subcourse: resolve the referenced course once for both image and description modal.
         $data->subcoursemodal = false;
         if ($this->mod->modname === 'subcourse') {

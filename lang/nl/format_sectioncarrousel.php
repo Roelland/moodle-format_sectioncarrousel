@@ -45,3 +45,5 @@ $string['firstsectionregular']     = 'Eerste sectie als gewone lijst weergeven';
 $string['lastsectionregular']      = 'Laatste sectie als gewone lijst weergeven';
 $string['section_highlight_feedback']   = 'Dia {$a->name} gemarkeerd.';
 $string['section_unhighlight_feedback'] = 'Markering verwijderd van dia {$a->name}.';
+$string['restrictioninfobtn']           = 'Toegangsvoorwaarden';
+$string['restrictionmodaltitle']        = 'Toegangsvoorwaarden';

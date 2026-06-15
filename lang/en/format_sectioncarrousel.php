@@ -45,3 +45,5 @@ $string['firstsectionregular']     = 'Show first section as regular list';
 $string['lastsectionregular']      = 'Show last section as regular list';
 $string['section_highlight_feedback']   = 'Slide {$a->name} highlighted.';
 $string['section_unhighlight_feedback'] = 'Highlighting removed from slide {$a->name}.';
+$string['restrictioninfobtn']           = 'Access conditions';
+$string['restrictionmodaltitle']        = 'Access conditions';
