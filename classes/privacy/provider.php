@@ -14,18 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace format_sectioncarrousel\privacy;
+
 /**
- * Version details.
+ * Privacy provider for the Section Carrousel course format.
  *
- * @package    format_sectioncarrousel
- * @copyright  2026 Your Name
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * This plugin stores no personal data. Card images and subcourse toggle settings
+ * are course/activity-level configuration, not user-specific data.
+ *
+ * @package   format_sectioncarrousel
+ * @copyright 2026 Your Name
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+class provider implements \core_privacy\local\metadata\null_provider {
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version   = 2026061503;        // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2025092200;        // Requires Moodle 5.1 (Build: 20250922).
-$plugin->component = 'format_sectioncarrousel';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '1.1';
+    public static function get_reason(): string {
+        return 'privacy:metadata';
+    }
+}

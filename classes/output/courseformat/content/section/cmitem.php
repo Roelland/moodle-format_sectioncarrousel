@@ -156,7 +156,8 @@ class cmitem extends \core_courseformat\output\local\content\section\cmitem {
                     $modalcontext = $coursecontext ?: \context_system::instance();
                     $data->subcoursemodal      = true;
                     $data->subcoursemodaliid   = 'carrousel-modal-' . $this->mod->id;
-                    $data->subcoursecoursename = format_string($refcourse->fullname);
+                    $data->subcoursecoursename = format_string($refcourse->fullname, true,
+                        ['context' => $modalcontext]);
                     $data->subcoursedescription = format_text(
                         $refcourse->summary,
                         $refcourse->summaryformat,
