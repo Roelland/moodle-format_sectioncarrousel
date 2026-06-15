@@ -80,12 +80,20 @@ class cmitem extends \core_courseformat\output\local\content\section\cmitem {
             }
         }
 
-        // Restriction badge: lock overlay for students (blocked) and teachers (informational).
-        $data->restrictionbadge = false;
+        // Restriction overlay.
+        // restrictionbadge       = show the lock icon at all.
+        // restrictionlockstudent = true  → student is blocked: icon + title both open modal.
+        //                          false → teacher: icon + title both navigate to the activity.
+        $data->restrictionbadge       = false;
+        $data->restrictionlockstudent = false;
+        $data->restrictioninfo        = '';
+        $data->activityurl            = '';
+
         if (!$this->mod->uservisible && !empty($this->mod->availableinfo)) {
-            // Student can see the card but cannot access it.
-            $data->restrictionbadge = true;
-            $data->restrictioninfo  = $this->mod->availableinfo;
+            // Student can see the card but is blocked from accessing it.
+            $data->restrictionbadge       = true;
+            $data->restrictionlockstudent = true;
+            $data->restrictioninfo        = $this->mod->availableinfo;
         } else if ($this->mod->uservisible && !empty($this->mod->availability)) {
             global $CFG;
             if (!empty($CFG->enableavailability)
@@ -93,10 +101,13 @@ class cmitem extends \core_courseformat\output\local\content\section\cmitem {
                 $ci       = new \core_availability\info_module($this->mod);
                 $fullinfo = $ci->get_full_information();
                 if ($fullinfo) {
-                    $data->restrictionbadge = true;
-                    $data->restrictioninfo  = \core_availability\info::format_info(
+                    // Teacher: informational lock only — activity is still fully accessible.
+                    $data->restrictionbadge       = true;
+                    $data->restrictionlockstudent = false;
+                    $data->restrictioninfo        = \core_availability\info::format_info(
                         $fullinfo, $this->mod->get_course()
                     );
+                    $data->activityurl = $this->mod->url ? $this->mod->url->out(false) : '';
                 }
             }
         }

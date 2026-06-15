@@ -130,8 +130,8 @@ define(['core/modal'], function(Modal) {
                 }
             }
 
-            // Restriction info modal.
-            var restrictionBtn = e.target.closest('.carrousel-restriction-overlay');
+            // Restriction info modal (student only — teacher overlay is a plain <a> link).
+            var restrictionBtn = e.target.closest('.carrousel-restriction-btn');
             if (restrictionBtn) {
                 e.preventDefault();
                 e.stopPropagation();
