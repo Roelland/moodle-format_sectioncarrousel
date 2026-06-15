@@ -130,11 +130,16 @@ define(['core/modal'], function(Modal) {
                 }
             }
 
-            // Restriction info modal (student only — teacher overlay is a plain <a> link).
+            // Restriction overlay: navigate (teacher) or show modal (student).
             var restrictionBtn = e.target.closest('.carrousel-restriction-btn');
             if (restrictionBtn) {
                 e.preventDefault();
                 e.stopPropagation();
+                var navigateUrl = restrictionBtn.getAttribute('data-navigate-url');
+                if (navigateUrl) {
+                    window.location.href = navigateUrl;
+                    return;
+                }
                 var restrictionTitle = restrictionBtn.getAttribute('data-restriction-title');
                 var restrictionBody  = restrictionBtn.getAttribute('data-restriction-body');
                 if (restrictionBody) {
