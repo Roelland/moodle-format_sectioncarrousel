@@ -91,9 +91,12 @@ class cmitem extends \core_courseformat\output\local\content\section\cmitem {
 
         if (!$this->mod->uservisible && !empty($this->mod->availableinfo)) {
             // Student can see the card but is blocked from accessing it.
+            // availableinfo may be a renderable object in Moodle 5.x — render to string.
             $data->restrictionbadge       = true;
             $data->restrictionlockstudent = true;
-            $data->restrictioninfo        = $this->mod->availableinfo;
+            $data->restrictioninfo        = \core_availability\info::format_info(
+                $this->mod->availableinfo, $this->mod->get_course()
+            );
         } else if ($this->mod->uservisible && !empty($this->mod->availability)) {
             global $CFG;
             if (!empty($CFG->enableavailability)
