@@ -80,12 +80,25 @@ class cmitem extends \core_courseformat\output\local\content\section\cmitem {
             }
         }
 
-        // Restriction badge: show ⓘ on cards the student can see but not access.
+        // Restriction badge: lock overlay for students (blocked) and teachers (informational).
         $data->restrictionbadge = false;
         if (!$this->mod->uservisible && !empty($this->mod->availableinfo)) {
-            $data->restrictionbadge   = true;
-            $data->restrictionmodalid = 'carrousel-restriction-' . $this->mod->id;
-            $data->restrictioninfo    = $this->mod->availableinfo;
+            // Student can see the card but cannot access it.
+            $data->restrictionbadge = true;
+            $data->restrictioninfo  = $this->mod->availableinfo;
+        } else if ($this->mod->uservisible && !empty($this->mod->availability)) {
+            global $CFG;
+            if (!empty($CFG->enableavailability)
+                    && has_capability('moodle/course:viewhiddenactivities', $this->mod->context)) {
+                $ci       = new \core_availability\info_module($this->mod);
+                $fullinfo = $ci->get_full_information();
+                if ($fullinfo) {
+                    $data->restrictionbadge = true;
+                    $data->restrictioninfo  = \core_availability\info::format_info(
+                        $fullinfo, $this->mod->get_course()
+                    );
+                }
+            }
         }
 
         // Subcourse: resolve the referenced course once for both image and description modal.
